@@ -2,7 +2,7 @@ function App() {
 
   return (
     <>
-      <h1>Hello Vite + React!</h1>
+      <h1 className="test">Hello World</h1>
     </>
   )
 }
