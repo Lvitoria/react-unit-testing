@@ -63,3 +63,70 @@ test('renders learn react link', () => {
     expect(getByText('Hello World')).toBeTruthy();
 });
 ~~~~
+
+o render nos disponibiliza algumas coisas a mais além do `getByText`, mas devemos nos atentar no inicio da nomenclatura são elas: 
+- getAll = pega todos os elements
+- get    = pega só um, quebra se o elemento não tiver em tela Obs: se tiver um elemento duplicado na tela ele falha
+- find   = pega só um, mas espera o elemento aparecer em tela  
+- query  = que se caso não aparecer o elemento ele não quebra o test
+
+<hr/>
+
+o  `waitFor` é uma das opções para esperar resposta assincronas, mas ele faz um loop até a resposta chegar, ou podemos simplesmente usar o `findByText` com `async` e `await`
+~~~~javascript
+await waitFor(() => {
+            expect(getByText('teste')).toBeInTheDocument();
+        })
+~~~~
+
+~~~~javascript
+it('should be able to add new item to list by input', async () => {
+        const { getByText, getByPlaceholderText, findByText, debug } = render(<List InitialItems={[]} />);
+        debug();
+        const input = getByPlaceholderText('novo item') as HTMLInputElement;
+        const button = getByText('Add pelo input'); // pegar o button
+        fireEvent.change(input, { target: { value: 'teste' } });
+        fireEvent.click(button); // clicar no button
+        debug();
+        expect( await findByText('teste')).toBeInTheDocument();
+});
+~~~~
+
+<hr/>
+
+Para chamar o mesmo componete de novo usamos o `rerender`
+
+~~~~javascript
+it('should render list item', () => {
+        const { getByText, rerender, queryByText, unmount } = render(<List  InitialItems={['a', 'b', 'c']} />);
+        expect(getByText('a')).toBeInTheDocument();
+        expect(getByText('b')).toBeInTheDocument();
+        expect(getByText('c')).toBeInTheDocument();
+        unmount()
+        rerender(<List  InitialItems={['i']} />);
+        expect(getByText('i')).toBeInTheDocument();
+        expect(queryByText('a')).not.toBeInTheDocument();
+});
+~~~~
+
+<hr/>
+
+## debugar 
+ dentro do `render` existe uma função `debug()` que podemos ver o antes e depois do html 
+ exemplo :
+~~~~javascript
+import { render, fireEvent } from '@testing-library/react';
+import App from './App';
+
+it('should be able to add new item to list', () => {
+    const { getByText, debug } = render(<App />);
+    debug();
+    const button = getByText('Add'); // pegar o button
+    fireEvent.click(button); // clicar no button
+    debug();
+    expect(getByText('d')).toBeInTheDocument();
+});
+~~~~
+
+
+[Git do base deste documentação](https://github.com/diego3g/react-unit-testing)
